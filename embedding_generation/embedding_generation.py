@@ -12,10 +12,10 @@ import itertools
 import datetime
 import logging
 import sys
+from collections import Counter
 
-# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-# to do: since not much of gensim's model training seems to actually be parallelized... maybe parallelize this further by training models for multiple time steps simultatneously?
 
 class TweetYielder(object):
     def __init__(self, filepaths):
@@ -78,13 +78,13 @@ def error(a):
 
 
 
-def generate(vector_size, window_size, min_count, no_of_iter, start_year, end_year, start_month, end_month, step_size, training_mode, corpus_location, model_save_location, start_time):
+def generate(vector_size, window_size, min_count, no_of_iter, start_year, end_year, start_month, end_month, step_size, skipgram, training_mode, corpus_location, model_save_location, start_time):
 
     if training_mode == 'independent':
         pool = multiprocessing.Pool() 
 
 
-    params = {'size': vector_size , 'window': window_size, 'min_count': min_count , 'iter' : no_of_iter,'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}
+    params = {'sg': skipgram, 'size': vector_size , 'window': window_size, 'min_count': min_count , 'iter' : no_of_iter,'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}
 
 
     i = 1
@@ -175,10 +175,28 @@ def generate(vector_size, window_size, min_count, no_of_iter, start_year, end_ye
 
                         # if we have already initialised a model:
                         if model:
+
+        
+                            print("started building vocab at {}".format(datetime.datetime.now()))
+                            # first we need to do the freq thesholding on the new vocab
+                            corpus_count = 0
+
+                            c = Counter()
+                            for t in tweets:
+                                corpus_count += 1
+                                c.update(t)
+                            for w in list(c.keys()):
+                                if c[w] < min_count:
+                                    del c[w]
+
+                            print("done building vocab at {}".format(datetime.datetime.now()))
+
                             # train the existing model.
                             print("we'll now train our EXISTING model on the data for this time-slice.")
-                            model.build_vocab(tweets, update=True)
-                            model.train(tweets, total_examples=model.corpus_count, epochs=model.iter)
+
+                            model.build_vocab_from_freq(c, update=True)
+                            del c # to free up RAM
+                            model.train(tweets, total_examples=corpus_count, epochs=model.iter)
 
                         # initialise and train model
                         else:
@@ -187,7 +205,7 @@ def generate(vector_size, window_size, min_count, no_of_iter, start_year, end_ye
 
 
                         # save the model and write the logfile.
-                        output_dir = '/'.join([model_save_location, training_mode, str(step_size), "_".join(month_range), "vec_"+str(params['size'])+"_w"+str(params['window'])+"_mc"+str(params['min_count'])+"_iter"+str(params['iter'])])
+                        output_dir = '/'.join([model_save_location, training_mode, str(step_size), "_".join(month_range), "vec_"+str(params['size'])+"_w"+str(params['window'])+"_mc"+str(params['min_count'])+"_iter"+str(params['iter'])+"_sg"+str(params['sg'])])
 
                         os.makedirs(output_dir, exist_ok=True)
                         output_filepath = '/'.join([output_dir, "saved_model.gensim"])
@@ -236,7 +254,8 @@ if __name__ == "__main__":
     ap.add_argument("-s", "--step_size", required=True, help="number of months per time-step: integer between 1 and 12")
     ap.add_argument("-t", "--training_mode", type=str, default="independent", help="'continuous' = continue training each time-slice from where we left off; 'independent' = create separate, independent models for each time-slice.")
     ap.add_argument("-c", "--corpus_location", type=str, default="/data/twitter_spritzer/cleaner_001p_nodups/", help="directory where corpus is located")
-    ap.add_argument("-m", "--model_save_location", type=str, default="/data/twitter_spritzer/models/cleaner_001p_nodups_models/", help="top-level directory where models are to be saved")
+    ap.add_argument("-m", "--model_save_location", type=str, default="/data/twitter_spritzer/models/cleaner_001p_nodups_models/skipgram/", help="top-level directory where models are to be saved")
+    ap.add_argument("-sg", "--skipgram", type=int, default=1, help="1 = skipgram; 0 = cbow")
 
 
     start_time = datetime.datetime.now()
@@ -258,6 +277,7 @@ if __name__ == "__main__":
     end_year = int(args["end_year"])
     end_month = int(args["end_month"])
     step_size = int(args["step_size"])
+    skipgram = int(args["skipgram"])
 
     training_mode = args["training_mode"]
 
@@ -265,5 +285,6 @@ if __name__ == "__main__":
     model_save_location = args["model_save_location"]
 
 
-    generate(vs,ws,mc,nit,start_year,end_year,start_month,end_month,step_size,training_mode,corpus_location,model_save_location, start_time)
+
+    generate(vs,ws,mc,nit,start_year,end_year,start_month,end_month,step_size,skipgram,training_mode,corpus_location,model_save_location, start_time)
 
