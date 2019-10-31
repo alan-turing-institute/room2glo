@@ -2,14 +2,14 @@
 
 
 
-1. Data pre-processing
-----------------------
+**1. Data pre-processing**
+--------------------------
 
 [documentation for the pre-processing steps we applied to the empirical Twitter data such that they can be reproduced]
 
 
-2. Synthetic dataset generation
--------------------------------
+**2. Synthetic dataset generation**
+-----------------------------------
 
 **i.** run get_freqs_and_wordnet_stats.py to create a file containing frequency counts and wordnet senses for all words in the vocabulary for a chosen month.
 
@@ -43,16 +43,16 @@ usage: create_synthetic_dataset.py -i INPUT_FILEPATH -o OUTPUT_ROOTDIR
 
 
 
-3. Embedding generation
------------------------
+**3. Embedding generation**
+---------------------------
 
 
 
 
-4. Semantic change detection methods
-------------------------------------
+**4. Semantic change detection methods**
+----------------------------------------
 
 
 
-5. Evaluation
---------------
+**5. Evaluation**
+-----------------
