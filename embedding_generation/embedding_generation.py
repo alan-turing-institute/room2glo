@@ -255,7 +255,7 @@ if __name__ == "__main__":
     ap.add_argument("-t", "--training_mode", type=str, default="independent", help="'continuous' = continue training each time-slice from where we left off; 'independent' = create separate, independent models for each time-slice.")
     ap.add_argument("-c", "--corpus_location", type=str, default="/data/twitter_spritzer/cleaner_001p_nodups/", help="directory where corpus is located")
     ap.add_argument("-m", "--model_save_location", type=str, default="/data/twitter_spritzer/models/cleaner_001p_nodups_models/skipgram/", help="top-level directory where models are to be saved")
-    ap.add_argument("-sg", "--skipgram", type=int, default=1, help="1 = skipgram; 0 = cbow")
+    ap.add_argument("-sg", "--skipgram", type=int, default=0, help="1 = skipgram; 0 = cbow")
 
 
     start_time = datetime.datetime.now()
