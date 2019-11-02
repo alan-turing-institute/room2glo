@@ -26,13 +26,13 @@ def get_related_terms(model, token, topn=10):
     except:
         print("Error!")
 
-def retrieve_model(model_save_locaton, vector_size,window_size,min_count,no_of_iter, year="2011", month="09", whole=False, oy=False):
+def retrieve_model(model_save_locaton, vector_size,window_size,min_count,no_of_iter,skipgram, year="2011", month="09", whole=False, oy=False):
     if whole == True:
-        fname = os.path.join(model_save_locaton, "models", "vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter), "saved_model.gensim")
+        fname = os.path.join(model_save_locaton, "models", "vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter)+"_sg"+str(skipgram), "saved_model.gensim")
     elif oy == True :
-        fname = os.path.join(model_save_locaton, year,"vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter), "saved_model.gensim")
+        fname = os.path.join(model_save_locaton, year,"vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter)+"_sg"+str(skipgram), "saved_model.gensim")
     else:
-        fname = os.path.join(model_save_locaton, "models", year, month, "vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter), "saved_model.gensim")
+        fname = os.path.join(model_save_locaton, "models", year, month, "vec_"+str(vector_size)+"_w"+str(window_size)+"_mc"+str(min_count)+"_iter"+str(no_of_iter)+"_sg"+str(skipgram), "saved_model.gensim")
     model = gensim.models.Word2Vec.load(fname)
     return model
 
@@ -48,7 +48,7 @@ def most_similar(model):
         print(get_related_terms(model, word))
         print("====================")
 
-def embedding_evaluation(model, vector_size,window_size,min_count,no_of_iter, year="2011", month="09", start=2011, end=2018, whole=False, One_month=False):  
+def embedding_evaluation(model, vector_size,window_size,min_count,no_of_iter, skipgram, year="2011", month="09", start=2011, end=2018, whole=False, One_month=False):  
     similarities = model.wv.evaluate_word_pairs(datapath('wordsim353.tsv'))  #triple (pearson, spearman, ratio of pairs with unknown words).
     analogy = model.wv.evaluate_word_analogies(datapath('questions-words.txt'))
     return analogy[0], similarities[0][0]
@@ -62,6 +62,7 @@ if __name__ == "__main__":
     ap.add_argument("-w", "--window_size", required=True, help="window size")
     ap.add_argument("-mc", "--min_count", required=True, help="min count")
     ap.add_argument("-i", "--no_of_iter", required=True, help="no of iteration")
+    ap.add_argument("-sg", "--skipgram", required=False, type=int, default=0, help="1 = skipgram; 0 = cbow")
     ap.add_argument("-y", "--year", required=False, help="year")
     ap.add_argument("-m", "--month", required=False, help="month")
     ap.add_argument("-s", "--start_year", required=False, help="start year")
@@ -82,19 +83,20 @@ if __name__ == "__main__":
     ws = int(args["window_size"])
     mc = int(args["min_count"])
     nit = int(args["no_of_iter"])
+    sg = int(args["skipgram"])
     
     
     
     if int(args_known.base_line) == 1:
         model = api.load("glove-twitter-200")
-        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit)
+        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit,sg)
         print("With baseline -- Analogy: ", analogy_score, "Similarity: ", similarity_score)
 
     if int(args_known.one_year) == 1:
         y = args["year"]
         msl = args["model_save_location"]
-        model = retrieve_model(msl,vs,ws,mc,nit,y, oy = True) 
-        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit,year=y, whole=False, One_month=False)
+        model = retrieve_model(msl,vs,ws,mc,nit,sg,y, oy = True) 
+        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit,sg,year=y, whole=False, One_month=False)
         print("Analogy: ", analogy_score, "Similarity: ", similarity_score)
         if int(args_known.most_similar) == 1:
             most_similar(model)
@@ -103,8 +105,8 @@ if __name__ == "__main__":
         y = args["year"]
         m = args["month"]
         msl = args["model_save_location"]
-        model = retrieve_model(msl,vs,ws,mc,nit,y,m) 
-        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit,year=y,month=m, whole=False, One_month=True)
+        model = retrieve_model(msl,vs,ws,mc,nit,sg,y,m) 
+        analogy_score, similarity_score = embedding_evaluation(model, vs,ws,mc,nit,sg,year=y,month=m, whole=False, One_month=True)
         print("Analogy: ", analogy_score, "Similarity: ", similarity_score)
         if int(args_known.most_similar) == 1:
             most_similar(model)
@@ -112,16 +114,16 @@ if __name__ == "__main__":
         s = int(args["start_year"])
         e  = int(args["end_month"])
         msl = args["model_save_location"]
-        model = retrieve_model(msl,vs,ws,mc,nit) 
-        analogy_score, similarity_score  = embedding_evaluation(model, vs,ws,mc,nit,start=s,end=e,whole=False, One_month=False)
+        model = retrieve_model(msl,vs,ws,mc,nit,sg) 
+        analogy_score, similarity_score  = embedding_evaluation(model, vs,ws,mc,nit,sg,start=s,end=e,whole=False, One_month=False)
         print("Analogy: ", analogy_score, "Similarity: ", similarity_score)
         if int(args_known.most_similar) == 1:
             most_similar(model)
     else:
         if int(args["whole"])==1:
             msl = args["model_save_location"]
-            model = retrieve_model(msl,vs,ws,mc,nit) 
-            analogy_score, similarity_score  = embedding_evaluation(model, vs,ws,mc,nit,whole=True, One_month=False)               # for the whole corpus
+            model = retrieve_model(msl,vs,ws,mc,nit,sg) 
+            analogy_score, similarity_score  = embedding_evaluation(model, vs,ws,mc,nit,sg,whole=True, One_month=False)               # for the whole corpus
             print("Analogy: ", analogy_score, "Similarity: ", similarity_score)
             if int(args_known.most_similar) == 1:
                 most_similar(model)
