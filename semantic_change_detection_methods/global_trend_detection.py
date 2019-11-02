@@ -3,6 +3,20 @@ import argparse
 from sklearn.linear_model import LinearRegression
 regression_model = LinearRegression()
 
+def convert_dist_dict(dist_dict):
+    """
+    Dictionaries of distances produced by change_point_detection.py are keyed first by time-slice, then by word.
+    This function converts them such that are keyed first by word, then by time-slice.
+    """
+    dist_dict2 = {}
+    for time_slice in dist_dict:
+        for word in dist_dict[time_slice]:
+            if word in dist_dict2:
+                dist_dict2[word][time_slice] = dist_dict[time_slice][word]
+            else:
+                dist_dict2[word] = {}
+                dist_dict2[word][time_slice] = dist_dict[time_slice][word]
+    return dist_dict2
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -11,7 +25,9 @@ if __name__ == "__main__":
     options = parser.parse_args()
 
     with open(options.input_file_location) as f:
-        data = json.load(f)
+        dist_dict = json.load(f)
+        
+    data = convert_dist_dict(dist_dict)
 
     for word, struct_time_cosine in data.items():
         cos_dist =list(struct_time_cosine.values())
