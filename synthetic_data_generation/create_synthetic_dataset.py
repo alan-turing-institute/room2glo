@@ -27,7 +27,7 @@ def maybe_return_pseudoword(context_word, year_month_index):
 	pseudoword_type = context_words[context_word]['pseudoword_type']
 	set_number = context_words[context_word]['set_number']
 
-	if pseudoword_type  == 6 or (pseudoword_type  == 7 and set_number == 1):
+	if pseudoword_type  == 'C3' or (pseudoword_type  == 'D4' and set_number == 1):
 		dist_index = context_words[context_word]['dist_index']
 		p_insert = pseudoword_insert_probs[pseudoword]["p{}_array_series".format(set_number)][year_month_index][dist_index]
 
@@ -113,15 +113,10 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
 
-	# parser.add_argument("-i", "--input_filepath", type=str, default='data/clean_001p_local_nodups/2014/2014-04.csv.gz', help = "path to file where data for the month we want to use is stored")
-	# parser.add_argument("-o", "--outfiles_rootdir", type=str, default='data/synthetic_evaluation_dataset/', help = "path to directory where synthetic dataset should be written")
-	# parser.add_argument("-c", "--context_word_dict_filepath", type=str, default='data/synthetic_evaluation_dataset/context_word_dict.json', help = "path to directory where synthetic dataset should be written")
-	# parser.add_argument("-p", "--pseudoword_dict_filepath", type=str, default='data/synthetic_evaluation_dataset/pseudoword_dict.json', help = "path to directory where synthetic dataset should be written")
-
-	parser.add_argument("-i", "--input_filepath", type=str, default='/data/twitter_spritzer/cleaner_001p_nodups/2014/2014-12.csv.gz', help = "path to file where data for the month we want to use is stored")
-	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/', help = "path to directory where synthetic dataset should be written")
-	parser.add_argument("-c", "--context_word_dict_filepath", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/context_word_dict.json', help = "path to directory where synthetic dataset should be written")
-	parser.add_argument("-p", "--pseudoword_dict_filepath", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/pseudoword_dict.json', help = "path to directory where synthetic dataset should be written")
+	parser.add_argument("-i", "--input_filepath", type=str, default='/data/twitter_spritzer/cleaner_001p_nodups/2014/2014-12.csv.gz', help = "path to file in which data for the month we want to use is stored")
+	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/synthetic_evaluation_dataset/', help = "path to directory where synthetic dataset should be written")
+	parser.add_argument("-c", "--context_word_dict_filepath", type=str, default='/data/synthetic_evaluation_dataset/context_word_dict.json', help = "path to file in which context word dict is stored")
+	parser.add_argument("-p", "--pseudoword_dict_filepath", type=str, default='/data/synthetic_evaluation_dataset/pseudoword_dict.json', help = "path to file in which pseudoword dict is stored")
 
 	parser.add_argument("-s", "--subsampling", type=int, default=0, help = "whether or not to subsample from original data. 1 = yes, 0 = no.")
 	parser.add_argument("-sp", "--subsampling_percent", type=int, default=70, help = "size of sample (percent of original data) e.g. 70")
@@ -132,7 +127,6 @@ if __name__ == "__main__":
 
 	options = parser.parse_args()
 
-
 	subsampling = options.subsampling
 	subsampling_percent = options.subsampling_percent
 
@@ -141,11 +135,8 @@ if __name__ == "__main__":
 
 	input_filepath = options.input_filepath
 	outfiles_rootdir = options.outfiles_rootdir
-	
 	context_word_dict_filepath = options.context_word_dict_filepath
 	pseudoword_dict_filepath = options.pseudoword_dict_filepath
-
-
 	start_year = options.start_year
 	end_year = options.end_year
 	start_month = options.start_month
@@ -153,8 +144,6 @@ if __name__ == "__main__":
 
 	start_time = datetime.datetime.now()
 	print('Starting at: {}\n\n'.format(start_time))
-
-
 
 	year_months = []
 
@@ -187,11 +176,8 @@ if __name__ == "__main__":
 
 	for year_month_index in range(n_timesteps):
 
-		pool.apply_async(create_synthetic, (year_month_index, subsampling, subsampling_percent), callback=success, error_callback=error)
-
-		# print('Starting {} at: {}\n\n'.format(year_months[year_month_index], datetime.datetime.now()))
 		# create_synthetic(year_month_index, subsampling, subsampling_percent)
-		# print('Finished {} at: {}\n\n'.format(year_months[year_month_index], datetime.datetime.now()))
+		pool.apply_async(create_synthetic, (year_month_index, subsampling, subsampling_percent), callback=success, error_callback=error)
 
 	try:
 		pool.close() 
