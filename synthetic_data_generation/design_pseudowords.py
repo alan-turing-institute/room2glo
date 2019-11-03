@@ -69,11 +69,8 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
 
-	# parser.add_argument("-i", "--input_filepath", type=str, default='data/synthetic_evaluation_dataset/vocab_stats.tsv', help = "path to file where vocab stats for the month we want to use are stored")
-	# parser.add_argument("-o", "--outfiles_rootdir", type=str, default='data/synthetic_evaluation_dataset/', help = "path to directory where pseudoword design info should be written")
-
-	parser.add_argument("-i", "--input_filepath", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/vocab_stats.tsv', help = "path to file where vocab stats for the month we want to use are stored")
-	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/', help = "path to directory where pseudoword design info should be written")
+	parser.add_argument("-i", "--input_filepath", type=str, default='/data/synthetic_evaluation_dataset/vocab_stats.tsv', help = "path to file where vocab stats for the month we want to use are stored")
+	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/synthetic_evaluation_dataset/', help = "path to directory where pseudoword design info should be written")
 
 	parser.add_argument("-sy", "--start_year", type=int, default = 2012, help="start year: integer, e.g. 2012")
 	parser.add_argument("-sm", "--start_month", type=int, default = 1, help="start month: integer, e.g. 6")
@@ -94,14 +91,11 @@ if __name__ == "__main__":
 	end_year = options.end_year
 	start_month = options.start_month
 	end_month = options.end_month
-
 	max_n_senses = options.max_n_senses
 	min_freq = options.min_freq
 
 	start_time = datetime.datetime.now()
 	print('Starting at: {}\n'.format(start_time))
-
-
 
 
 	year_months = []
@@ -119,12 +113,8 @@ if __name__ == "__main__":
 	n_timesteps = len(year_months)
 
 
-
-
-
 	df = pandas.read_csv(input_filepath, sep='\t', header=None, names=['word', 'freq', 'n_senses','senses','n_hypernyms','hypernyms','n_hyponyms','hyponyms'])
-
-
+	
 
 	# only consider words which have at least one sense in WordNet, and which are more than 2 letters long, and which have no more than max_n_senses, and which occur at least min_freq times.
 	df = df[df['n_senses'] > 0]
@@ -142,16 +132,13 @@ if __name__ == "__main__":
 	bin1_df  = bin1_df[bin1_df['freq'] < freq_bins[1]]
 	print(len(bin1_df))
 
-
 	bin2_df  = df[df['freq'] >= freq_bins[1]]
 	bin2_df  = bin2_df[bin2_df['freq'] < freq_bins[2]]
 	print(len(bin2_df))
 
-
 	bin3_df = df[df['freq'] >= freq_bins[2]]
 	bin3_df  = bin3_df[bin3_df['freq'] < freq_bins[3]]
 	print(len(bin3_df))
-
 
 	bin4_df  = df[df['freq'] >= freq_bins[3]]
 	bin4_df = bin4_df[bin4_df['freq'] < freq_bins[4]]
@@ -161,32 +148,21 @@ if __name__ == "__main__":
 	print(len(bin5_df))
 
 	freq_bin_dfs = [bin1_df, bin2_df, bin3_df, bin4_df, bin5_df]
-
-
-
 	print("got freq_bin_dfs. bins: {} -- {}".format(freq_bins, datetime.datetime.now()))
 
-
-	# some time series of probs
+	
 	
 
-	# evenly spaced probs: np.linspace(0,1,n_timesteps)
-	# evenly spaced probs, only going up to 0.7 : np.linspace(0,0.7,n_timesteps)
-	# evenly spaced probs, starting from 0.3 : np.linspace(0.3,1,n_timesteps)
-	# probs spaced evenly on a log scale (starting from 0.1, ending at 1): np.logspace(-1,0,n_timesteps)
-
-
+	# pseudoword insertion probability time series
+	
 	constant_prob_array = np.array([0.7]*n_timesteps)
-
-
+	
 	n_zeros = int(np.round(n_timesteps / 5, 0))
 	n_ones = n_zeros
+	
 	increasing_prob_arrays = [np.linspace(0.1,1,n_timesteps), np.logspace(-1,0,n_timesteps), np.concatenate((np.zeros(n_zeros), np.linspace(0.1,1,n_timesteps-n_zeros))), np.concatenate((np.zeros(n_zeros), np.logspace(-1,0,n_timesteps-n_zeros))), np.concatenate((np.linspace(0.1,1,n_timesteps-n_ones), (np.ones(n_ones)))), np.concatenate((np.logspace(-1,0,n_timesteps-n_ones), (np.ones(n_ones))))]
-
-
 	decreasing_prob_arrays = [np.flip(x,0) for x in increasing_prob_arrays]
-
-
+	
 	spike1 = np.concatenate((np.linspace(0.1,1,3),np.linspace(1,0.1,3)[1:]))
 	spike2 = np.concatenate((np.logspace(-1,0,3),np.logspace(0,-1,3)[1:]))
 	spiky_arrays = []
@@ -194,7 +170,6 @@ if __name__ == "__main__":
 	for i in [int(i) for i in np.linspace(0, n_timesteps-5, 6)]:
 		spiky_arrays.append(np.concatenate((np.array([0.1]*i), spike1, np.array([0.1]*(n_timesteps-5-i)))))
 		spiky_arrays.append(np.concatenate((np.array([0.1]*i), spike2, np.array([0.1]*(n_timesteps-5-i)))))
-
 
 	periodic_arrays = []
 	for month in ['01', '03', '05', '07', '09', '11']:
@@ -228,16 +203,12 @@ if __name__ == "__main__":
 		periodic_arrays.append(periodic_array1)
 		periodic_arrays.append(periodic_array2)
 
-
-
-
-
 	print("made arrays -- {}".format(datetime.datetime.now()))
 
+	
+	
 	# now we sample 'context words' to represent different senses of the pseudowords
-
-	# at the moment, for simplicity, i am keeping all sets of context words to cardinality 1, except for in regimes 6 & 7 where I'll have one with cardinality 1 and one with cardinality 10.
-
+	# at the moment, for simplicity, we keep all sets of context words to cardinality 1, except for in schemas C3 & D4 where we have have one with cardinality 1 and one with cardinality 10.
 
 	pseudoword_dict = defaultdict(lambda:defaultdict(dict))
 	context_word_dict = defaultdict(lambda:defaultdict(dict))
@@ -247,17 +218,14 @@ if __name__ == "__main__":
 
 	for freq_bin_number in range(len(freq_bin_dfs)):
 
-
-
 		print("\n\nbin number: {} -- {}".format(freq_bin_number, datetime.datetime.now()))
 
 
 		for pseudoword_number in range(max_n_pseudowords_per_freq_bin):
 
-
 			print("\npseudoword number: {} -- {}".format(pseudoword_number,datetime.datetime.now()))
 
-			#regime 1:
+			# Schema D1:
 			(new_df, sampled_context_words) = sample_single_context_word(freq_bin_dfs[freq_bin_number])
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -274,7 +242,7 @@ if __name__ == "__main__":
 				# bin is empty, so we'll break out of the loop and move on to the next freq_bin
 				break
 
-			#regime 2:
+			# Schema C1:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 2)
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -293,7 +261,7 @@ if __name__ == "__main__":
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
 				pass
 
-			#regime 3:
+			# Schema D2:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 2)
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -312,7 +280,7 @@ if __name__ == "__main__":
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
 				pass
 
-			#regime 4:
+			# Schema D3:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 2)
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -332,7 +300,7 @@ if __name__ == "__main__":
 				pass
 
 
-			#regime 5:
+			# Schema C2:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 2)
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -355,16 +323,13 @@ if __name__ == "__main__":
 
 	for freq_bin_number in range(len(freq_bin_dfs)):
 
-
-
 		print("\n\nbin number: {} -- {}".format(freq_bin_number, datetime.datetime.now()))
-
 
 		for pseudoword_number in range(max_n_pseudowords_per_freq_bin):
 
 			print("\npseudoword number: {} -- {}".format(pseudoword_number,datetime.datetime.now()))
 
-			#regime 7:
+			#Schema C3:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 11)
 			if sampled_context_words:
 				print(sampled_context_words)
@@ -387,16 +352,13 @@ if __name__ == "__main__":
 
 	for freq_bin_number in range(len(freq_bin_dfs)):
 
-
-
 		print("\n\nbin number: {} -- {}".format(freq_bin_number, datetime.datetime.now()))
-
 
 		for pseudoword_number in range(max_n_pseudowords_per_freq_bin):
 
 			print("\npseudoword number: {} -- {}".format(pseudoword_number,datetime.datetime.now()))
 
-			#regime 6:
+			# Schema D4:
 			(new_df, sampled_context_words) = sample_context_word_group(freq_bin_dfs[freq_bin_number], 11)
 			if sampled_context_words:
 				print(sampled_context_words)
