@@ -278,21 +278,18 @@ def write_logfile(outfilepath, options, start_time):
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--model1_filepath", type=str, default="/data/twitter_spritzer/models/clean_001p_nodups_models/monthly/2012/01/200/saved_model.gensim", help = "path to first embedding model")
-	parser.add_argument("--model2_filepath", type=str, default="/data/twitter_spritzer/models/clean_001p_nodups_models/monthly/2018/01/200/saved_model.gensim", help = "path to second embedding model")
+	parser.add_argument("--model1_filepath", type=str, default="/models/continuous/3/2012-01_2012-03/vec_200_w10_mc500_iter15_sg0/saved_model.gensim", help = "path to first embedding model")
+	parser.add_argument("--model2_filepath", type=str, default="/models/continuous/3/2017-04_2017-06/vec_200_w10_mc500_iter15_sg0/saved_model.gensim", help = "path to second embedding model")
 	parser.add_argument("-f", "--frequency_threshold", type=int, default=0, help = "Limit the words we rank to only those which occured at least f times in both months")
 	parser.add_argument("-k", "--k_neighbors", type=int, default=25, help = "Number of neighbors to consider if using neighborhood shift measure")
 	parser.add_argument("-t", "--t_best", type=int, default=20, help = "Number of top-ranked words to output")
 	parser.add_argument("-c", "--cosine", action="store_true", default=False, help = "Include this flag to rank by cosine dist measure (include both this and the neighborhood flag to produce separate rankings using each measure)") 
 	parser.add_argument("-u", "--cosine_unaligned", action="store_true", default=False, help = "Include this flag to rank by cosine dist measure, WITHOUT aligning first") 
 	parser.add_argument("-n", "--neighborhood", action="store_true", default=False, help = "Include this flag to rank by neighborhood shift measure (include both this and the cosine flag to produce separate rankings using each measure)")
-	parser.add_argument("-o", "--outfiles_dir", type=str, default="/data/twitter_spritzer/analysis/hamilton_candidates/monthly/d200_w10_mc50_iter10/2012_01_to_2018_01/", help = "Path to file where results will be written")
+	parser.add_argument("-o", "--outfiles_dir", type=str, default="/results/two_step_candidates/continuous/3/2012-01_2012-03_to_2017-04_2017-06/vec_200_w10_mc500_iter15_sg0/", help = "Path to file where results will be written")
 	options = parser.parse_args()
 
-
 	start_time = datetime.datetime.now()
-
-	# to do: contruct outfile path automatically based on model filepaths? -- can't do until we've settled on a consistent directory and filename structure for the models.
 
 	if not options.cosine and not options.neighborhood and not options.cosine_unaligned:
 		raise RuntimeError('Please specify which semantic change measure(s) to use by including at least one of --cosine, --cosine_unaligned, or --neighborhood.')
