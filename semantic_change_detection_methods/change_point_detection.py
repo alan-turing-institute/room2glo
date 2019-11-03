@@ -243,7 +243,7 @@ def write_logfile(outfilepath, options, start_time):
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-d", "--models_rootdir", type=str, default="/data/twitter_spritzer/models/nov_29/skipgram/continuous/1/", help = "path to directory where models are stored")
+	parser.add_argument("-d", "--models_rootdir", type=str, default="/models/skipgram/continuous/1/", help = "path to directory where models are stored")
 	parser.add_argument("-f", "--first_timeslice", type=str, default='2012_01', help = "which timeslice to start from")
 	parser.add_argument("-l", "--last_timeslice", type=str, default='2017_06', help = "which timeslice to end at")
 	parser.add_argument("-a", "--align_to", type=str, default="first", help = "which model to align every other model to: 'first', 'last', or 'previous'")
@@ -256,7 +256,7 @@ if __name__ == "__main__":
 	parser.add_argument("-r", "--rank_by", type=str, default='p_value', help = "What to rank words by: 'p_value', 'z_score', or 'mean_shift'")
 	parser.add_argument("-n", "--n_best", type=int, default=1000, help = "Size of n-best list to store")
 	parser.add_argument("-v", "--vocab_threshold", type=int, default=75, help = "percent of models which must contain word in order for it to be included")
-	parser.add_argument("-o", "--outfiles_dir", type=str, default="/data/twitter_spritzer/analysis/kulkarni_candidates/nov_29/monthly/skipgram/continuous_aligned/vec_200_w10_mc500_iter15/2012_01_to_2017_06/nov_26/filtered2/", help = "Path to file where results will be written")
+	parser.add_argument("-o", "--outfiles_dir", type=str, default="/results/change_point_candidates/nov_29/monthly/skipgram/continuous_aligned/vec_200_w10_mc500_iter15/2012_01_to_2017_06/", help = "Path to file where results will be written")
 	parser.add_argument("-vs", "--vector_size", type = int, default=200, help="vector size")
 	parser.add_argument("-ws", "--window_size", type = int, default=10, help="window size")
 	parser.add_argument("-mc", "--min_count", type = int, default=500, help="min count")
