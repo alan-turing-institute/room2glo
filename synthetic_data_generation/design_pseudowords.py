@@ -232,7 +232,7 @@ if __name__ == "__main__":
 				
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type1_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeD1_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 'D1', 'p1_series': increasing_prob_arrays[pseudoword_number]}
 
@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type2_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeC1_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'C1', 'p1_series': constant_prob_array, 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type3_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeD2_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'D2', 'p1_series': constant_prob_array, 'p2_series': spiky_arrays[pseudoword_number]}
 
@@ -287,7 +287,7 @@ if __name__ == "__main__":
 				
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type4_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeD3_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'D3', 'p1_series': constant_prob_array, 'p2_series': periodic_arrays[pseudoword_number]}
 
@@ -307,7 +307,7 @@ if __name__ == "__main__":
 				
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type5_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeC2_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'C2', 'p1_series':decreasing_prob_arrays[pseudoword_number], 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
@@ -336,7 +336,7 @@ if __name__ == "__main__":
 				
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type7_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeC3_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words[1:], 'S2_words':[sampled_context_words[0]], 'type': 'C3', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps), 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
@@ -365,7 +365,7 @@ if __name__ == "__main__":
 				
 				freq_bin_dfs[freq_bin_number] = new_df
 
-				pseudoword_name = "type6_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
+				pseudoword_name = "typeD4_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
 				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 'D4', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps)}
 
