@@ -20,10 +20,10 @@ def convert_dist_dict(dist_dict):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ifile", "--input_file_location", type=str, default="/data2/distance_time_series/synthetic_data/skipgram/independent/neighborhood_last.json", help = "full path of the input file location")
-    parser.add_argument("-ofile", "--output_file_location", type=str, default="./results_dec/significant_score_skipgram_independent_neighborhood_last.tsv", help = "location of the file where the results will be stored")
+    parser.add_argument("-ifile", "--input_file_location", type=str, default="/results/change_point_candidates/independent/1/2012-01_2012-01_to_2017-06_2017-06/vec_200_w10_mc500_iter15_sg0/time_series_analysis_distances_f2012_01_l2017_06_afirst_cfirst_mcosine_k25_s1000_p0.05_g0_v75.json", help = "full path of the input file location")
+    parser.add_argument("-ofile", "--output_file_location", type=str, default="/results/global_trend_candidates/independent/1/2012-01_2012-01_to_2017-06_2017-06/vec_200_w10_mc500_iter15_sg0/f2012_01_l2017_06_afirst_cfirst_mcosine_k25_s1000_p0.05_g0_v75.tsv", help = "location of the file where the results will be stored")
     options = parser.parse_args()
-
+    
     with open(options.input_file_location) as f:
         dist_dict = json.load(f)
         
@@ -39,9 +39,6 @@ if __name__ == "__main__":
                 regression_model.fit(np.asarray(list(range(len(cos_dist)))).reshape(-1,1), np.asarray(cos_dist).reshape(-1, 1))
                 beta=regression_model.coef_[0][0]
                 intercept = regression_model.intercept_[0]
-                #stat = stats.ks_2samp(cos_dist, the_shuffle_c)[0]
-                #p_value_ks = stats.ks_2samp(cos_dist, the_shuffle_c)[1]
-                #print("Genuin Cos dist ", word," in sorted in time series: ", cos_dist, "tau: ", tau, "beta: ",beta)
                 with open(options.output_file_location, "a") as output:
                         fieldnames = ['eval_word','kendall_tau','pearson_corr','spearcorr','beta','cosine_dist']
                         writer = csv.writer(output, delimiter='\t', lineterminator='\n')
