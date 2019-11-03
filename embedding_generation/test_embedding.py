@@ -45,7 +45,7 @@ def embedding_evaluation(model):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-mp", "--model_path", help = "path to saved word embedding model")  
+    ap.add_argument("-mp", "--model_path", default="/models/independent/1/2012-01_2012-01/vec_200_w10_mc500_iter15_sg0/saved_model.gensim", help = "path to saved word embedding model")  
     ap.add_argument("-bs", "--base_line", required=False, default="0", help="0 for no baseline")
     ap.add_argument("-ms", "--most_similar", required=False, default="0", help="0 for no most similar list")
     
