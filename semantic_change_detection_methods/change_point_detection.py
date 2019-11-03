@@ -12,7 +12,6 @@ import glob
 import itertools
 import multiprocessing
 
-# print('gensim version:', gensim.__version__)
 
 
 def load_model(model_path):
@@ -64,7 +63,7 @@ def get_dist_dict(model_path, alignment_reference_model_path, comparison_referen
 			else: # distance_measure == 'neighborhood':
 				dist_dict[word] = hs.measure_semantic_shift_by_neighborhood(comparison_reference_model, model, word, k)
 		
-		# if the word does not occur in both the current timestep's model and the comparison reference model's vocab (and implicitly, in the alignment reference model, since we aligned them both to that), then we can't calculate a distance measure for this word and this timestep, so we just set its value to None. 
+		# if the word does not occur in both the current timestep's model and the comparison reference model's vocab (and implicitly, in the alignment reference model, since we aligned them both to that), then we can't calculate a distance measure for this word and this timestep. 
 		else:
 			pass
 			#dist_dict[word] = None
@@ -134,16 +133,10 @@ def compute_mean_shift(time_series_dict, j, compare_to):
 	xs = list(itertools.chain.from_iterable([timestep_to_index[timestep]]*len(time_series_dict[timestep]) for timestep in time_series_dict))
 	ys = list(itertools.chain.from_iterable(time_series_dict.values()))
 
-
-	# Mean-shift score for timestep j = mean(scores after j) - mean(scores up to j). So if representations for a word after time j are on average much further from the representation in the comparison reference model than the representations before time j, the mean-shift score will be large.
+	
 	if compare_to == 'first':
 		return np.mean([ys[i] for i in range(len(ys)) if xs[i] > j])  - np.mean([ys[i] for i in range(len(ys)) if xs[i] <= j])
 	else: # compare_to == 'last' or compare_to == 'previous':
-
-
-		# if we are comparing to the last time-slice, we are looking for a point j where before j, the vector was not very similar to the one in the last time-slice, but ater j, it became significantly *more* similar to the one in the last time-slice. So we want the z-scores BEFORE j to be bigger than the ones after. Which would make mean(up to j) - mean(after j) be large and positive.
-
-		# if we are comparing to the previous time-slice, then doing it this way round would mean we detect words which were not very-self similar at first, and then started to become more self-similar at some point. i.e. unstable meaning replaced by a stable one?
 		return np.mean([ys[i] for i in range(len(ys)) if xs[i] <= j])  - np.mean([ys[i] for i in range(len(ys)) if xs[i] > j])
 
 
@@ -170,14 +163,6 @@ def get_p_value_series(word, mean_shift_series, n_samples, z_scores_dict, compar
 		mean_shift_permuted_series = get_mean_shift_series(permuted_z_scores_dict, compare_to)
 
 		for x in range(len(mean_shift_permuted_series)):
-			# if the original mean_shift_series has a NaN value, then we just increment the counter, so that we'll end up with a p-value of 1 for this index. We would get a NaN if we tried to take the mean of an empty slice in the mean-shift calculation. Which would happen if either before or after index j, there were no time-steps in which the word had actually occured in both models. 
-			# if np.isnan(mean_shift_series[x]):
-			# 	print("Mean_shift_series score is 'NaN'! Word: {}\nSeries:{}".format(word,mean_shift_series))
-			# 	p_value_series[x] += 1
-			# if we got a NaN in the permuted series, this will evaluate as False.
-			#  * Are NaNs problematic for the statistical validity here? *
-			# could I instead throw away all indices of the original z-score series which have None values (and discard the corresponding time-slices from the time-slice series, and just proceed using only the time-slices for which we have values that are not None? 
-			# elif mean_shift_permuted_series[x] > mean_shift_series[x]:
 			if mean_shift_permuted_series[x] > mean_shift_series[x]:
 				p_value_series[x] += 1
 	p_value_series /= n_samples
@@ -189,7 +174,6 @@ def detect_change_point(word, z_scores_dict, n_samples, p_value_threshold, gamma
 	"""
 	This function computes the mean-shift time-series from the given word's z-score series, then computes the p-value series, 
 	"""
-
 
 	index_to_timestep = {}
 	for (i,timestep) in enumerate(sorted(z_scores_dict.keys())):
@@ -273,18 +257,13 @@ if __name__ == "__main__":
 	parser.add_argument("-n", "--n_best", type=int, default=1000, help = "Size of n-best list to store")
 	parser.add_argument("-v", "--vocab_threshold", type=int, default=75, help = "percent of models which must contain word in order for it to be included")
 	parser.add_argument("-o", "--outfiles_dir", type=str, default="/data/twitter_spritzer/analysis/kulkarni_candidates/nov_29/monthly/skipgram/continuous_aligned/vec_200_w10_mc500_iter15/2012_01_to_2017_06/nov_26/filtered2/", help = "Path to file where results will be written")
-
 	parser.add_argument("-vs", "--vector_size", type = int, default=200, help="vector size")
 	parser.add_argument("-ws", "--window_size", type = int, default=10, help="window size")
 	parser.add_argument("-mc", "--min_count", type = int, default=500, help="min count")
 	parser.add_argument("-ni", "--no_of_iter", type = int, default=15, help="no of iteration")
-
 	parser.add_argument("-t", "--training_mode", type = str, default='independent', help="training mode: was it independent or continuous? -- if you want to use alignment, say independent.")
-
 	parser.add_argument("-z", "--z_scores", action="store_true", default=False, help = "Include this flag to standardize the distances (i.e. use z-scores). If this flag is not included, the raw cosine or neighbourhood scores will be used without standardization.") 
-
 	parser.add_argument("-sg", "--skipgram", action="store_true", default=False, help = "Include this flag if skipgram architecture was used") 
-
 	options = parser.parse_args()
 
 
@@ -292,14 +271,11 @@ if __name__ == "__main__":
 	print("Starting at {}".format(start_time))
 
 	# First, we construct a list of the filepaths of all the models we have, and a list of the time-slices they correspond to.
-
 	# We initalize the vocab to the set of words which occur in at least v% of the models.
 	
 	model_paths = []
 	time_slice_labels = []
-	# vocab_filepath = "{}/time_series_vocab_{}pc_{}_to_{}.txt".format(options.models_rootdir, options.vocab_threshold, options.first_timeslice, options.last_timeslice)
-	# vocab_filepath = '/data/twitter_spritzer/models/first/independent/1/time_series_vocab_75pc_2012_01_to_2017_06.txt'
-	vocab_filepath = '/data/twitter_spritzer/models/skipgram/independent/1/independent/1/time_series_vocab_75pc_2012_01_to_2017_06.txt'
+	vocab_filepath = "{}/time_series_vocab_{}pc_{}_to_{}.txt".format(options.models_rootdir, options.vocab_threshold, options.first_timeslice, options.last_timeslice)
 
 
 
@@ -421,40 +397,7 @@ if __name__ == "__main__":
 			if tup:
 				(i, dist_dict) = tup
 				dict_of_dist_dicts[time_slice_labels[i]] = dist_dict
-		
-
-		# dict_of_dist_dicts = {}
-		# for (i, model_path) in enumerate(model_paths):
-
-		# 	if i == 0 and (options.compare_to == 'previous' or options.align_to =='previous' or options.compare_to == 'first'):
-		# 		continue
-
-		# 	elif i == len(model_paths) - 1 and options.compare_to == 'last': 
-		# 		continue
-
-		# 	else:
-
-		# 		if options.align_to == 'first':
-		# 			alignment_reference_model_path = model_paths[0]
-		# 		elif options.align_to == 'last':
-		# 			alignment_reference_model_path = model_paths[-1]
-		# 		else:
-		# 			alignment_reference_model_path = model_paths[i-1]
-
-
-		# 		if options.compare_to == 'first':
-		# 			comparison_reference_model_path = model_paths[0]
-		# 		elif options.compare_to =='last':
-		# 			comparison_reference_model_path = model_paths[-1]
-		# 		else:
-		# 			comparison_reference_model_path = model_paths[i-1]
-
-
-		# 		dist_dict = get_dist_dict(model_path, alignment_reference_model_path, comparison_reference_model_path, vocab, options.distance_measure, options.k_neighbors, options.training_mode)
-
-
-		# 		dict_of_dist_dicts[time_slice_labels[i]] = dist_dict
-				
+			
 
 		time_slices_used = sorted(list(dict_of_dist_dicts.keys()))
 		print("\n\nLIST OF TIME SLICES USED:")
@@ -464,8 +407,6 @@ if __name__ == "__main__":
 		for t in time_slice_labels:
 			if t in dict_of_dist_dicts:
 				dict_of_z_score_dicts[t] = get_z_score_dict(dict_of_dist_dicts[t])
-
-
 
 
 
@@ -485,7 +426,6 @@ if __name__ == "__main__":
 
 
 	# Finally, we do the change-point analysis on each word's z-score (or dist) time-series. We keep a ranked list of the n 'best' change-points detected, and print it when we're done.
-
 
 	pool2 = multiprocessing.Pool(32)
 
@@ -509,15 +449,6 @@ if __name__ == "__main__":
 					dict_of_dists_by_word[word][time_slice].append(dict_of_dist_dicts[time_slice][word])
 
 		results = pool2.map(get_word_change_point, dict_of_dists_by_word.items())
-
-	# results = []
-	# for (i,word) in enumerate(vocab):
-	# 	#print('{}: {}\t starting at {}'.format(i, word, datetime.datetime.now()))
-	# 	z_score_series = [dict_of_z_score_dicts[time_slice][word] for time_slice in time_slice_labels_used]
-	# 	change_point = detect_change_point(word, time_slice_labels_used, z_score_series, options.n_samples, options.p_value_threshold, options.gamma_threshold, options.compare_to)
-	# 	if change_point:
-	# 		#(word, time_slice, p_value, mean_shift, z_score) = change_point
-	# 		results.append(change_point)
 
 	print('got {} results'.format(len(results)))
 	results = [r for r in results if r]
@@ -543,7 +474,7 @@ if __name__ == "__main__":
 		outfile_path = options.outfiles_dir+'/time_series_analysis_standardized_output_f{}_l{}_a{}_c{}_m{}_k{}_s{}_p{}_g{}_v{}.tsv'.format(options.first_timeslice, options.last_timeslice, options.align_to, options.compare_to, options.distance_measure, options.k_neighbors, options.n_samples, options.p_value_threshold, options.gamma_threshold, options.vocab_threshold)
 	else:
 		outfile_path = options.outfiles_dir+'/time_series_analysis_NOT_standardized_output_f{}_l{}_a{}_c{}_m{}_k{}_s{}_p{}_g{}_v{}.tsv'.format(options.first_timeslice, options.last_timeslice, options.align_to, options.compare_to, options.distance_measure, options.k_neighbors, options.n_samples, options.p_value_threshold, options.gamma_threshold, options.vocab_threshold)
-	#with open(options.outfile_path, 'w') as outfile:
+	
 	with open(outfile_path, 'w') as outfile:
 		for (i, item) in enumerate(results[:options.n_best]):
 			#print(i, ":", item)
