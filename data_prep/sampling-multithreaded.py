@@ -13,7 +13,6 @@ def sample_10p(infilepath, filename, outfiles_rootdir):
 	outfilepath = '/'.join([outfiles_rootdir, filename[:4], filename])
 	with gzip.open(infilepath, 'rt') as infile:
 		with gzip.open(outfilepath, 'wt') as outfile:
-		#Suggest "w" rather than "a" -- if the file already exists, we want to overwrite (or skip entirely) but probably not append
 			for line in infile:
 				i = random.random()
 				if i < 0.1:
@@ -59,7 +58,6 @@ if __name__ == "__main__":
 		for filename in [f for f in filenames if f != 'md5sums']:
 			infilepath = os.path.join(root,filename)
 			#sample_10p(infilepath, filename, options.outfiles_rootdir)
-			#print('Done {}'.format(infilepath))
 			pool.apply_async(sample_10p, (infilepath, filename, options.outfiles_rootdir), callback=success, error_callback=error)
 
 	try:
