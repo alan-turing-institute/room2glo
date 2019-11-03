@@ -234,9 +234,9 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type1_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 1, 'p1_series': increasing_prob_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 'D1', 'p1_series': increasing_prob_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 1, 'set_number':1}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D1', 'set_number':1}
 
 			else:
 				# bin is empty, so we'll break out of the loop and move on to the next freq_bin
@@ -251,11 +251,11 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type2_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 2, 'p1_series': constant_prob_array, 'p2_series': increasing_prob_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'C1', 'p1_series': constant_prob_array, 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 2, 'set_number':1}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C1', 'set_number':1}
 
-				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 2, 'set_number':2}
+				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C1', 'set_number':2}
 
 			else:
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
@@ -270,11 +270,11 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type3_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 3, 'p1_series': constant_prob_array, 'p2_series': spiky_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'D2', 'p1_series': constant_prob_array, 'p2_series': spiky_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 3, 'set_number':1}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D2', 'set_number':1}
 
-				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 3, 'set_number':2}
+				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D2', 'set_number':2}
 
 			else:
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
@@ -289,11 +289,11 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type4_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 4, 'p1_series': constant_prob_array, 'p2_series': periodic_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'D3', 'p1_series': constant_prob_array, 'p2_series': periodic_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 4, 'set_number':1}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D3', 'set_number':1}
 
-				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 4, 'set_number':2}
+				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D3', 'set_number':2}
 
 			else:
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
@@ -309,11 +309,11 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type5_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 5, 'p1_series':decreasing_prob_arrays[pseudoword_number], 'p2_series': increasing_prob_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':[sampled_context_words[0]], 'S2_words':[sampled_context_words[1]], 'type': 'C2', 'p1_series':decreasing_prob_arrays[pseudoword_number], 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 5, 'set_number':1}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C2', 'set_number':1}
 
-				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 5, 'set_number':2}
+				context_word_dict[sampled_context_words[1]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C2', 'set_number':2}
 
 			else:
 				# not enough words in bin to take a sample, but perhaps there might be enough to take a smaller sample required for a different regime, so we'll carry on.
@@ -338,12 +338,12 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type7_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words[1:], 'S2_words':[sampled_context_words[0]], 'type': 7, 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps), 'p2_series': increasing_prob_arrays[pseudoword_number]}
+				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words[1:], 'S2_words':[sampled_context_words[0]], 'type': 'C3', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps), 'p2_series': increasing_prob_arrays[pseudoword_number]}
 
-				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 7, 'set_number':2}
+				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C3', 'set_number':2}
 
 				for (i, context_word) in enumerate(sampled_context_words[1:]):
-					context_word_dict[context_word] = {'pseudoword': pseudoword_name, 'pseudoword_type': 7, 'set_number':1, 'dist_index': i}
+					context_word_dict[context_word] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C3', 'set_number':1, 'dist_index': i}
 
 			else:
 				# not enough words in bin to take a sample
@@ -367,10 +367,10 @@ if __name__ == "__main__":
 
 				pseudoword_name = "type6_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
-				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 6, 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps)}
+				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 'D4', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps)}
 
 				for (i, context_word) in enumerate(sampled_context_words):
-					context_word_dict[context_word] = {'pseudoword': pseudoword_name, 'pseudoword_type': 6, 'set_number':1, 'dist_index':i}
+					context_word_dict[context_word] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'D4', 'set_number':1, 'dist_index':i}
 
 			else:
 				# not enough words in bin to take a sample
