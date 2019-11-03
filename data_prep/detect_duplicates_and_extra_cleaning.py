@@ -47,40 +47,20 @@ def extra_cleaning(line):
 	line = '\t'.join(line)
 	return line
 
-# def test_collisons(tweet_text, fingerprint, tweet_dict, hashtable): 
 def test_collisons(tweet_text, fingerprint, hashtable): 
-	# tweet_text = tweet_dict[tweet_id]
 	is_dup = False
 
 
 	for tweet_text2 in hashtable[fingerprint]:
 		if tweet_text == tweet_text2:
 			# tweet_text is exact duplicate of tweet_text2
-
-			# print('\n\nDUPLICATE TWEETS:\n')
-			# print(tweet_text)
-			# print(tweet_text2)
-
 			is_dup = True
 
-	# for tweet_id2 in hashtable[fingerprint]:
-	# 	tweet_text2 = tweet_dict[tweet_id2]
-	# 	if tweet_text == tweet_text2:
-	# 		# tweet_text is exact duplicate of tweet_text2
-
-	# 		# print('\n\nDUPLICATE TWEETS:\n')
-	# 		# print(tweet_text)
-	# 		# print(tweet_text2)
-
-	# 		is_dup = True
-
-	# return (is_dup, tweet_dict, hashtable)
 	return (is_dup, hashtable)
 
 
 def deduplicate_month(infiles_rootdir, outfiles_rootdir, year_month, year, month):
 
-	# tweet_dict = {}
 	hashtable = defaultdict(set)
 	n_dups = 0
 	n_tweets = 0
@@ -99,10 +79,6 @@ def deduplicate_month(infiles_rootdir, outfiles_rootdir, year_month, year, month
 							n_tweets += 1
 							tweet = line.strip().split('\t')
 
-							#if int(tweet[3]): # if tweet is a retweet:
-
-
-							# tweet_id = int(tweet[2])
 							try:
 								tweet_text = preprocess_text(tweet[5])
 							except IndexError:
@@ -110,36 +86,24 @@ def deduplicate_month(infiles_rootdir, outfiles_rootdir, year_month, year, month
 								continue
 
 
-							# tweet_dict[tweet_id] = tweet_text
 							fingerprint = zlib.adler32(tweet_text.encode('utf-8'))
 							if hashtable[fingerprint]:
-								# (is_dup, tweet_dict, hashtable) = test_collisons(tweet_text, fingerprint, tweet_dict, hashtable)
 								(is_dup, hashtable) = test_collisons(tweet_text, fingerprint, hashtable)
 								if is_dup:
 									n_dups += 1
-									#dups_outfile.write(line)
 									print(line, file=dups_outfile)
 								else: 
-									# hashtable[fingerprint].add(tweet_id)			
-									# tweet_dict[tweet_id] = tweet_text	
 									hashtable[fingerprint].add(tweet_text)
 									# false collision, so not a duplicate, so write out tweet.
 									line = extra_cleaning(line)
-									#outfile.write(line)
 									print(line, file=outfile)
 							else:
-								# hashtable[fingerprint].add(tweet_id)
-								# tweet_dict[tweet_id] = tweet_text	
+								
 								hashtable[fingerprint].add(tweet_text)			
 								# no collision, so not a duplicate, so write out tweet.
 								line = extra_cleaning(line)
-								#outfile.write(line)
 								print(line, file=outfile)
 
-
-							# else:
-							# 	# not a retweet, so write out tweet.
-							# 	outfile.write(line)
 
 	sys.stdout.write('{}: {} duplicates detected out of {} tweets\n'.format(year_month, n_dups, n_tweets))
 	return year_month
@@ -179,11 +143,9 @@ if __name__ == "__main__":
 	sys.stdout.write("Started at {}\n".format(start_time))
 
 	for year in range(2011,2019):
-	# for year in range(2012,2015):
 		os.makedirs('/'.join([options.outfiles_rootdir, str(year)]),exist_ok=True) #Create all needed dirs, no error if they already exist
 		os.makedirs('/'.join([options.outfiles_rootdir, 'duplicates', str(year)]),exist_ok=True) #Create all needed dirs, no error if they already exist
 		for month in range(1,13):
-		# for month in range(1,5):
 			year_month = "{}-{:02}".format(year,month)
 			pool.apply_async(deduplicate_month, (options.infiles_rootdir, options.outfiles_rootdir, year_month, year, month), callback=success, error_callback=error)
 
