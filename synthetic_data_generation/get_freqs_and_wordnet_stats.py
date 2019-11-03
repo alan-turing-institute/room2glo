@@ -8,26 +8,6 @@ import os
 
 
 
-# import string
-
-# stopWords = set(stopwords.words('english'))
-
-# # for ignoring single letters:
-# singlechars = set(string.ascii_letters)
-# singlechars -= set('aiu')
-# singlechars |= set('#_')
-
-# def is_int(s):
-# 	try:
-# 		int(s)
-# 		return True
-# 	except ValueError:
-# 		return False
-
-
-
-
-
 class TweetYielder(object):
 	 def __init__(self, filepaths):
 		 self.filepaths = filepaths
@@ -39,25 +19,6 @@ class TweetYielder(object):
 				 tweet = line[-1].split()
 				 yield tweet
 			 print("Passed through {}".format(filepath))
-
-
-# class TweetYielder(object):
-# 	def __init__(self, filepaths):
-# 		self.filepaths = filepaths
-
-# 	def __iter__(self):
-# 		for filepath in self.filepaths:									   
-# 			for line in gzip.open(filepath,"rt"):
-# 				line = line.strip().split('\t')
-
-# 				if int(line[4]) > 90:
-# 					tweet = [w for w in line[-1].split() if w not in singlechars and w not in stopWords]
-# 					for i in range(len(tweet)):
-# 						if is_int(tweet[i]):
-# 							tweet[i] = '<NUM>'
-
-# 				yield tweet
-# 			print("Passed through {}".format(filepath))
 
 
 def write_logfile(outfilepath, options, start_time):
@@ -75,12 +36,7 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--input_filepath", type=str, default='/data/twitter_spritzer/cleaner_001p_nodups/2014/2014-12.csv.gz', help = "path to file where data for the month we want to use is stored")
-	parser.add_argument("-o", "--output_dir", type=str, default='/data/twitter_spritzer/synthetic_evaluation_dataset/', help = "path to file where word frequencies and wordnet stats should be written")
-
-	# parser.add_argument("-i", "--input_filepath", type=str, default='data/clean_001p_local_nodups/2014/2014-04.csv.gz', help = "path to file where data for the month we want to use is stored")
-	# parser.add_argument("-o", "--output_dir", type=str, default='data/synthetic_evaluation_dataset/', help = "path to directory where word frequencies and wordnet stats should be written")
-
-
+	parser.add_argument("-o", "--output_dir", type=str, default='/data/synthetic_evaluation_dataset/', help = "path to file where word frequencies and wordnet stats should be written")
 	options = parser.parse_args()
 
 	start_time = datetime.datetime.now()
