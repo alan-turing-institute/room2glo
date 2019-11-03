@@ -42,22 +42,16 @@ def create_clean_file(infilepath, filename, outfiles_rootdir):
     with gzip.open(infilepath, 'rt') as infile:
         with gzip.open(outfilepath, 'wt') as outfile:
             tweetwriter = csv.writer(outfile, delimiter='\t', quoting=csv.QUOTE_MINIMAL)
-            #base = os.path.basename(filename)
-            #date = os.path.splitext(base)[0]
             date=filename.replace(".csv.gz","")
 
             for line in infile:
                 RT = -1
                 d = json.loads(line)
                 user_id =  d[u'user'][u'id_str']
-                #user_id = user_id.encode('utf-8')
                 tweet_id =   d[u'id_str']
-                #tweet_id = tweet_id.encode('utf-8')
                 tweet  = d[u'text']
-                #tweet = ethical_tweet(tweet)
                 tweet = tweet_clean(tweet)
-                #tweet = tweet.encode('utf-8')
-                #tweet = tweet.lower()
+
                 if u'retweeted_status' not in d or d["retweeted_status"]==None:
                     if tweet.startswith('rt') is False:
                         RT = 0
@@ -76,9 +70,7 @@ def create_clean_file(infilepath, filename, outfiles_rootdir):
                     cld=-1 #Shouldn't get here.
                 tweet = remove_repetitions(tweet)
                 tweet = contractions(tweet)
-                #write_to_csv_file(outfile,date,user_id ,tweet_id, RT, tweet, cld)
                 
-                #if cld > 50:
                 tweetwriter.writerow([date, user_id, tweet_id, RT,cld, tweet])
     return infilepath
 
