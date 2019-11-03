@@ -93,32 +93,22 @@ def generate(corpus_location, year, month, model_load_location, model_save_locat
 if __name__ == "__main__":
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-m", "--month", type=int, default=6, help="month: integer, e.g. 6")
-	ap.add_argument("-y", "--year", type=int, default=2017, help="year: integer, e.g. 2014")
-	# ap.add_argument("-c", "--corpus_location", type=str, default="/data/twitter_spritzer/cleaner_001p_nodups/", help="directory where corpus is located")
-	# ap.add_argument("-ms", "--model_save_location", type=str, default="/data/twitter_spritzer/models/cleaner_001p_nodups_models/", help="path to where model should be saved")
-	# ap.add_argument("-ml", "--model_load_location", type=str, default="/data/twitter_spritzer/models/cleaner_001p_nodups_models/", help="path to model to load for pre-initialization")
-	ap.add_argument("-c", "--corpus_location", type=str, default="/data2/synthetic_evaluation_dataset/subsampled_70/", help="directory where corpus is located")
-	ap.add_argument("-ms", "--model_save_location", type=str, default="/data2/models/synthetic_evaluation_dataset_models/subsampled_70/nov_29/continuous2step/1/2017-06_2017-06/vec_200_w9_mc100_iter15_sg0/saved_model.gensim", help="path to where model should be saved")
-	ap.add_argument("-ml", "--model_load_location", type=str, default="/data2/models/synthetic_evaluation_dataset_models/subsampled_70/nov_29/continuous/1/2012-01_2012-01/vec_200_w9_mc100_iter15_sg0/saved_model.gensim", help="path to model to load for pre-initialization")
-	ap.add_argument("-mc", "--min_count", type=int, default=100, help="minimum number of times word must appear in data for time-slice in order to be included in training examples")
-
-
+	ap.add_argument("-y", "--year", type=int, default=2017, help="year: integer, e.g. 2017")
+	ap.add_argument("-c", "--corpus_location", type=str, default="/data/synthetic_evaluation_dataset/subsampled_70/", help="directory where corpus is located")
+	ap.add_argument("-ml", "--model_load_location", type=str, default="/models/synthetic_evaluation_dataset_models/subsampled_70/continuous/1/2012-01_2012-01/vec_200_w10_mc500_iter15_sg0/saved_model.gensim", help="path to model to load for pre-initialization")
+        ap.add_argument("-ms", "--model_save_location", type=str, default="/models/synthetic_evaluation_dataset_models/subsampled_70/continuous2step/1/2017-06_2017-06/vec_200_w10_mc500_iter15_sg0/saved_model.gensim", help="path to where model should be saved")
+	ap.add_argument("-mc", "--min_count", type=int, default=500, help="minimum number of times word must appear in data for time-slice in order to be included in training examples")
 	start_time = datetime.datetime.now()
 
 	
 	args = vars(ap.parse_args())
-	print(args)
-	
+	#print(args)
 	args_known, leftovers = ap.parse_known_args()
-	
-
 	month = args["month"]
 	year = args["year"]
-
 	corpus_location = args["corpus_location"]
 	model_load_location = args["model_load_location"]
 	model_save_location = args["model_save_location"]
-
 	min_count = args["min_count"]
 
 
