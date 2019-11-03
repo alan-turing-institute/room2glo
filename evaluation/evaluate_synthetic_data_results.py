@@ -24,11 +24,10 @@ def average_precision_at_k(average_precision,k_retrieved,n_correct,total_n_corre
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-r", "--results_dir", type=str, default="/data/twitter_spritzer/analysis/synthetic_evaluation_dataset/hamilton_candidates/monthly/continuous/vec_200_w9_mc100_iter15/2012_01_to_2014_06/", help = "path to directory where results are stored")
-	parser.add_argument("-f", "--results_fn", type=str, default="cosine.tsv", help = "name of file where results are stored")
-	parser.add_argument("-c", "--word_column", type=int, default=1, help = "which column are words in? (for hamilton candidates, it's 1; for time series candidates, it's 0)")
-	parser.add_argument("-d", "--pseudoword_design_dict", type=str, default="/data/twitter_spritzer/synthetic_evaluation_dataset/pseudoword_dict.json", help = "filepath for pseudoword design dict")
-
+	parser.add_argument("-r", "--results_dir", type=str, default="/results/change_point_candidates/independent/1/2012-01_2012-01_to_2017-06_2017-06/vec_200_w10_mc500_iter15_sg0/", help = "path to directory where results are stored")
+	parser.add_argument("-f", "--results_fn", type=str, default="time_series_analysis_NOT_standardized_output_f2012_01_l2017_06_afirst_cfirst_mcosine_k25_s1000_p0.05_g0_v75.tsv", help = "name of file where results are stored")
+	parser.add_argument("-c", "--word_column", type=int, default=1, help = "which column are words in? (for two-step candidates, it's 1; for time series candidates, it's 0)")
+	parser.add_argument("-d", "--pseudoword_design_dict", type=str, default="/data/synthetic_evaluation_dataset/pseudoword_dict.json", help = "filepath for pseudoword design dict")
 	options = parser.parse_args()
 
 
@@ -58,7 +57,7 @@ if __name__ == "__main__":
 					pseudoword_type = d[word]['type']
 					freq_bin = word[9]
 
-					if pseudoword_type in (2,5,7):
+					if pseudoword_type in ('C1','C2','C3'):
 						correct = True
 						n_correct += 1
 						n_correct_by_type_and_bin[pseudoword_type][freq_bin] += 1
@@ -143,7 +142,7 @@ if __name__ == "__main__":
 		with open(options.pseudoword_design_dict) as infile:
 			d = json.load(infile)
 
-		total_n_correct = len([p for p in d if d[p]['type'] in (2,5,7) and int(p[9]) == freq_bin_number])
+		total_n_correct = len([p for p in d if d[p]['type'] in ('C1','C2','C3') and int(p[9]) == freq_bin_number])
 		print('total n correct: {}'.format(total_n_correct))
 		n_correct = 0
 		k_retrieved = 0
@@ -158,7 +157,7 @@ if __name__ == "__main__":
 						pseudoword_type = d[word]['type']
 						freq_bin = word[9]
 
-						if pseudoword_type in (2,5,7) and int(freq_bin) == freq_bin_number:
+						if pseudoword_type in ('C1','C2','C3') and int(freq_bin) == freq_bin_number:
 							correct = True
 							n_correct += 1
 
@@ -180,7 +179,7 @@ if __name__ == "__main__":
 		with open(options.pseudoword_design_dict) as infile:
 			d = json.load(infile)
 
-		total_n_correct = len([p for p in d if d[p]['type'] in (2,5,7) and int(p[-1]) == pseudoword_number])
+		total_n_correct = len([p for p in d if d[p]['type'] in ('C1','C2','C3') and int(p[-1]) == pseudoword_number])
 		print('total n correct: {}'.format(total_n_correct))
 		n_correct = 0
 		k_retrieved = 0
@@ -194,7 +193,7 @@ if __name__ == "__main__":
 					if word in d:
 						pseudoword_type = d[word]['type']
 
-						if pseudoword_type in (2,5,7) and int(word[-1]) == pseudoword_number:
+						if pseudoword_type in ('C1','C2','C3') and int(word[-1]) == pseudoword_number:
 							correct = True
 							n_correct += 1
 
