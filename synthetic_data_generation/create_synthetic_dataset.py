@@ -7,6 +7,11 @@ import numpy as np
 import gzip
 import sys
 
+
+# This script expects the input data to be in a gzipped file containing one tweet per line, 
+# with tweets consisting of tab-separated fields, the text of the tweet being in the
+# last field. To read from a corpus with a different format, modify or replace this class with 
+# one of your own.
 class TweetYielder(object):
 	def __init__(self, filepaths):
 		self.filepaths = filepaths
@@ -120,6 +125,7 @@ if __name__ == "__main__":
 
 	parser.add_argument("-s", "--subsampling", type=int, default=0, help = "whether or not to subsample from original data. 1 = yes, 0 = no.")
 	parser.add_argument("-sp", "--subsampling_percent", type=int, default=70, help = "size of sample (percent of original data) e.g. 70")
+	
 	parser.add_argument("-sy", "--start_year", type=int, default = 2012, help="start year: integer, e.g. 2012")
 	parser.add_argument("-sm", "--start_month", type=int, default = 1, help="start month: integer, e.g. 6")
 	parser.add_argument("-ey", "--end_year", type=int, default = 2017, help="end year: integer, e.g. 2014")
@@ -144,6 +150,18 @@ if __name__ == "__main__":
 
 	start_time = datetime.datetime.now()
 	print('Starting at: {}\n\n'.format(start_time))
+	
+	
+	
+	
+	
+	
+	# This script assumes you wish to model a corpus in which each timestep consists of data spanning a single month.
+	# Hence, the number of timesteps in the synthetic dataset is determined on the basis of a specified start 
+	# year & month and a specified end year & month. However, the granularity of the timesteps is not relevant for
+	# the actual pseduoword generation procedure; this depends only on the *number* of timesteps you want to have in the 
+	# synthetic dataset. So, you may wish to modify the script such that you can specify the number of timesteps directly,
+	# and you may wish to modify the directory structure and names of the files that the synthetic data is written to.
 
 	year_months = []
 
@@ -161,6 +179,9 @@ if __name__ == "__main__":
 
 
 	n_timesteps = len(year_months)
+	
+	
+	
 
 
 	# load the dictionaries.
