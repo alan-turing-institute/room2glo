@@ -130,7 +130,7 @@ def create_synthetic(year_month_index, subsampling, subsample_percent):
 					else:
 						tweet_out.append(tweet[i])
 						
-				# finally, we write this potentially-modified line to our synthetic data file.
+				# finally, we write this potentially-modified line to the synthetic data file for the current time-step.
 				outfile.write(' '.join(tweet_out)+'\n')
 	return year_month
 
@@ -206,7 +206,7 @@ if __name__ == "__main__":
 	# This script assumes you wish to model a corpus in which each timestep consists of data spanning a single month.
 	# Hence, the number of timesteps in the synthetic dataset is determined on the basis of a specified start 
 	# year & month and a specified end year & month. However, the granularity of the timesteps is not relevant for
-	# the actual pseduoword generation procedure; this depends only on the *number* of timesteps you want to have in the 
+	# the actual pseudoword generation procedure; this depends only on the *number* of timesteps you want to have in the 
 	# synthetic dataset. So, you may wish to modify the script such that you can specify the number of timesteps directly,
 	# and you may wish to modify the directory structure and names of the files that the synthetic data is written to.
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
 	
 
 
-	# load the dictionaries created that were previously created using design_pseudowords.py.
+	# load the pseudoword design dictionaries that were previously created using design_pseudowords.py.
 	with open(context_word_dict_filepath, 'r') as infile:
 		context_words = json.load(infile)
 
