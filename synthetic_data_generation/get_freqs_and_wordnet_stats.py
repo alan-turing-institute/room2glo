@@ -7,7 +7,10 @@ import gzip
 import os
 
 
-
+# This script expects the input data to be in a gzipped file containing one tweet per line, 
+# with tweets consisting of tab-separated fields, the text of the tweet being in the
+# last field. To read from a corpus with a different format, modify or replace this class with 
+# one of your own.
 class TweetYielder(object):
 	 def __init__(self, filepaths):
 		 self.filepaths = filepaths
