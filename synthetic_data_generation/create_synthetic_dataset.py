@@ -32,7 +32,7 @@ def maybe_return_pseudoword(context_word, year_month_index):
 	pseudoword_type = context_words[context_word]['pseudoword_type']
 	set_number = context_words[context_word]['set_number']
 
-	if pseudoword_type  == 'C3' or (pseudoword_type  == 'D4' and set_number == 1):
+	if pseudoword_type  == 'D4' or (pseudoword_type  == 'C3' and set_number == 1):
 		dist_index = context_words[context_word]['dist_index']
 		p_insert = pseudoword_insert_probs[pseudoword]["p{}_array_series".format(set_number)][year_month_index][dist_index]
 
