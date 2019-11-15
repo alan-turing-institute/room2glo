@@ -8,6 +8,12 @@ import os
 
 
 def sample_single_context_word(freq_bin_df):
+	"""
+	Sample a single word from a given frequency bin.
+	
+	Returns a copy of the dataframe for the given frequency bin with the sampled word removed,
+	and a list containing the sampled word.
+	"""
 
 	if len(freq_bin_df) < 1:
 		return (freq_bin_df, None)
@@ -18,6 +24,11 @@ def sample_single_context_word(freq_bin_df):
 
 
 def sample_context_word_group(freq_bin_df, n_words):
+	"""
+	Sample multiple words from a given frequency bin, such that none of them have any senses in common according to WordNet.
+	
+	Returns a copy of the dataframe for the given frequency bin with the sampled words removed, and a list of the sampled words. 
+	"""
 
 	if len(freq_bin_df) < n_words:
 		return (freq_bin_df, None)
@@ -98,6 +109,14 @@ if __name__ == "__main__":
 	print('Starting at: {}\n'.format(start_time))
 
 
+	
+	
+	# This script assumes you wish to model a corpus in which each timestep consists of data spanning a single month.
+	# Hence, the number of timesteps in the synthetic dataset is determined on the basis of a specified start 
+	# year & month and a specified end year & month. However, the granularity of the timesteps is not relevant for
+	# the actual pseudoword design & generation procedure; this depends only on the *number* of timesteps you want to have in the 
+	# synthetic dataset. So, you may wish to modify the script such that you can specify the number of timesteps directly.
+
 	year_months = []
 	for year in range(start_year, end_year+1):
 
@@ -113,6 +132,7 @@ if __name__ == "__main__":
 	n_timesteps = len(year_months)
 
 
+	# load the frequency and WordNet statistics that were obtained previously using get_freqs_and_wordnet_stats.py
 	df = pandas.read_csv(input_filepath, sep='\t', header=None, names=['word', 'freq', 'n_senses','senses','n_hypernyms','hypernyms','n_hyponyms','hyponyms'])
 	
 
@@ -153,24 +173,49 @@ if __name__ == "__main__":
 	
 	
 
-	# pseudoword insertion probability time series
+	# Here we construct some arrays of pseudoword insertion probabilities.
+	# You may wish to modify some of these or add some of your own.
+	# (each array should be of length n_timesteps)
 	
+	
+	# Constant pseudoword-insertion-probability of 0.7 at all timesteps:
+	# (these will be used in Schemas C1, D2, D3)
 	constant_prob_array = np.array([0.7]*n_timesteps)
+
 	
+	# To vary the time-steps at which the changes begin and end, we can start or end the pseudoword-insertion-probability
+	# arrays with a number of 0s or 1s. Here, we experiment with offsetting the start or end of a change by 1/5 of the 
+	# total length of the time-series.
 	n_zeros = int(np.round(n_timesteps / 5, 0))
 	n_ones = n_zeros
 	
+	
+	# A list of arrays in which pseudoword-insertion-probabilities increase over time.
+	# - In the first array, the insertion probability increases lineary throughout the time-series from 0.1 to 1
+	# - In the second, it increases on a logarithmic scale
+	# - In the third and fourth, we start with insertion probabilities of zero, and begin to increase them from 1/5 of the
+	# way along the time-series
+	# - In the fifth and sixth, we increase the insertion probabilities from 0.1 to 1 over the first 4/5 of the time
+	# series, and keep them at 1 for the last 1/5.
+	# (these will be used in Schemas C1, C2, C3, D1)
 	increasing_prob_arrays = [np.linspace(0.1,1,n_timesteps), np.logspace(-1,0,n_timesteps), np.concatenate((np.zeros(n_zeros), np.linspace(0.1,1,n_timesteps-n_zeros))), np.concatenate((np.zeros(n_zeros), np.logspace(-1,0,n_timesteps-n_zeros))), np.concatenate((np.linspace(0.1,1,n_timesteps-n_ones), (np.ones(n_ones)))), np.concatenate((np.logspace(-1,0,n_timesteps-n_ones), (np.ones(n_ones))))]
+	
+	# as above, but with pseudoword-insertion-probabilities that decrease over time.
+	# (these will be used in Schema C2)
 	decreasing_prob_arrays = [np.flip(x,0) for x in increasing_prob_arrays]
 	
+	
+	# spiky arrays (these will be used in Schema D2)
 	spike1 = np.concatenate((np.linspace(0.1,1,3),np.linspace(1,0.1,3)[1:]))
 	spike2 = np.concatenate((np.logspace(-1,0,3),np.logspace(0,-1,3)[1:]))
 	spiky_arrays = []
-	# this will break if n_timesteps is too small...
+	# this will break if n_timesteps is too small (i.e. less than 5)
 	for i in [int(i) for i in np.linspace(0, n_timesteps-5, 6)]:
 		spiky_arrays.append(np.concatenate((np.array([0.1]*i), spike1, np.array([0.1]*(n_timesteps-5-i)))))
 		spiky_arrays.append(np.concatenate((np.array([0.1]*i), spike2, np.array([0.1]*(n_timesteps-5-i)))))
 
+		
+	# periodic arrays (these will be used in Schema D3)		
 	periodic_arrays = []
 	for month in ['01', '03', '05', '07', '09', '11']:
 		periodic_array1 = np.array([0.1]*n_timesteps)
@@ -338,8 +383,10 @@ if __name__ == "__main__":
 
 				pseudoword_name = "typeC3_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
 
+				# Here, for Set 1 context words, rather than using an array we defined earlier, we draw a series of multinomial distributions over all the Set 1 context words from a dirichlet distribution with uniform sparsity-inducing alpha.
+				# (for the Set 2 context words, we do use arrays we defined earlier)
 				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words[1:], 'S2_words':[sampled_context_words[0]], 'type': 'C3', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps), 'p2_series': increasing_prob_arrays[pseudoword_number]}
-
+			
 				context_word_dict[sampled_context_words[0]] = {'pseudoword': pseudoword_name, 'pseudoword_type': 'C3', 'set_number':2}
 
 				for (i, context_word) in enumerate(sampled_context_words[1:]):
@@ -366,7 +413,8 @@ if __name__ == "__main__":
 				freq_bin_dfs[freq_bin_number] = new_df
 
 				pseudoword_name = "typeD4_bin{}_pseudoword{}".format(freq_bin_number,pseudoword_number)
-
+				
+				# Here, rather than using an array we defined earlier, we draw a series of multinomial distributions over all the Set 1 context words from a dirichlet distribution with uniform, sparsity-inducing alpha.
 				pseudoword_dict[pseudoword_name] = {'S1_words':sampled_context_words, 'type': 'D4', 'p1_array_series': np.random.dirichlet([0.1]*len(sampled_context_words), n_timesteps)}
 
 				for (i, context_word) in enumerate(sampled_context_words):
