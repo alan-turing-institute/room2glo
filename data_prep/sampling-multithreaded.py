@@ -31,7 +31,7 @@ def error(a):
 
 
 def write_logfile(infiles_rootdir, outfiles_rootdir, start_time):
-	logfile_path = '/'.join([outfile_rootdir, 'corpus_provenance.log'])
+	logfile_path = '/'.join([outfiles_rootdir, 'corpus_provenance.log'])
 	with open(logfile_path, 'w') as logfile:
 		logfile.write('Script started at: {}\n\n'.format(start_time))
 		logfile.write('Output created at: {}\n\n'.format(datetime.datetime.now()))
