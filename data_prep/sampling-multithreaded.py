@@ -37,14 +37,14 @@ def write_logfile(infiles_rootdir, outfiles_rootdir, start_time):
 		logfile.write('Output created at: {}\n\n'.format(datetime.datetime.now()))
 		logfile.write('Script used: {}\n\n'.format(os.path.abspath(__file__)))
 		logfile.write('Original corpus located at: {}\n\n'.format(infiles_rootdir))
-		logfile.write('10\% sample corpus written to:{}\n\n').format(outfiles_rootdir)
+		logfile.write('10% sample corpus written to:{}\n\n'.format(outfiles_rootdir))
 
 
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--infiles_rootdir", type=str, default="/data/twitter_spritzer/01p/", help = "path to directory where original corpus is stored")
-	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/twitter_spritzer/001p/', help = "path to directory where 10\% sample corpus should be written")
+	parser.add_argument("-o", "--outfiles_rootdir", type=str, default='/data/twitter_spritzer/001p/', help = "path to directory where 10 percent sample corpus should be written")
 	options = parser.parse_args()
 
 	start_time = datetime.datetime.now()
