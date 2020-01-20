@@ -308,7 +308,7 @@ if __name__ == "__main__":
 				if options.skipgram:
 					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}_sg1/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
 				else:
-					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}_sg0/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
+					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
 				if os.path.isfile(model_path):
 					model_paths.append(model_path)
 					time_slice_labels.append(time_slice)
@@ -337,7 +337,7 @@ if __name__ == "__main__":
 				if options.skipgram:
 					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}_sg1/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
 				else:
-					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}_sg0/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
+					model_path = "{}/{}-{:02}_{}-{:02}/vec_{}_w{}_mc{}_iter{}/saved_model.gensim".format(options.models_rootdir, year, month, year, month, options.vector_size, options.window_size, options.min_count, options.no_of_iter)
 				try:
 					model = load_model(model_path)
 				except FileNotFoundError:

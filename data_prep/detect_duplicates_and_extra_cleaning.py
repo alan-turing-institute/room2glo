@@ -37,13 +37,12 @@ def preprocess_text(tweet_text):
 
 def extra_cleaning(line):
 	line = line.strip().split('\t')
-	if int(line[4]) > 90:
-		tweet = [w for w in line[-1].split() if w not in singlechars]
-		for i in range(len(tweet)):
-			if is_int(tweet[i]):
-				tweet[i] = '<NUM>'
-		line = line[:-1]
-		line.append(' '.join(tweet))
+	tweet = [w for w in line[-1].split() if w not in singlechars]
+	for i in range(len(tweet)):
+		if is_int(tweet[i]):
+			tweet[i] = '<NUM>'
+	line = line[:-1]
+	line.append(' '.join(tweet))
 	line = '\t'.join(line)
 	return line
 
@@ -85,6 +84,9 @@ def deduplicate_month(infiles_rootdir, outfiles_rootdir, year_month, year, month
 								sys.stderr.write('INDEX ERROR: ' + str(tweet)+'\n')
 								continue
 
+							fields = line.strip().split('\t')
+							if int(fields[4]) <= 90:
+								continue #Discard tweets where CLD detections 90% or less of the tweet to be English
 
 							fingerprint = zlib.adler32(tweet_text.encode('utf-8'))
 							if hashtable[fingerprint]:
